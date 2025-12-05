@@ -21,8 +21,9 @@ Biomedical research increasingly relies on the ability to work responsibly with 
 For the full Health AI in R curriculum, visit [https://bnwolford.github.io/HealthAIinR/](https://bnwolford.github.io/HealthAIinR/)
 
 ## License
-All materials hosted here are subject to the licenses described in the LICENSE file.## Instructors
+All materials hosted here are subject to the licenses described in the LICENSE file.
+## Instructors
 Brooke Wolford
 ## Live Troubleshooting Session
-Wednesday
+Wednesday, 10 Deember 14:00-15:00
 ## Software Requirements
