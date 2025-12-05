@@ -25,8 +25,8 @@ All materials hosted here are subject to the licenses described in the LICENSE f
 ## Instructors
 Brooke Wolford
 ## Facilitators
-Vandana Vandana
-Andrew Morris
+Vandana Vandana  
+Andrew Morris  
 ## Live Troubleshooting Session
 Wednesday, 10 Deember 14:00-15:00
 ## Software Requirements
