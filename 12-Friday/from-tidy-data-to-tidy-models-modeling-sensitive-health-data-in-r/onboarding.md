@@ -51,7 +51,7 @@ Open Rstudio and in the bottom left corner you'll see the Files pane. Navigate t
 In the bottom left pane, select the Terminal pane and execute the following command.
 
 ```
-git clone https://github.com/BioDataAnalysisLab/BioData-Training-School-2025.git
+git clone https://github.com/bnwolford/OBiWoW-2025.git
 ```
 Now you can navigate to 12_Friday > from-tidy-data-...
 
