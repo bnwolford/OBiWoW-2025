@@ -23,22 +23,22 @@ Biomedical research increasingly relies on the ability to work responsibly with 
 For the full Health AI in R curriculum, visit [https://bnwolford.github.io/HealthAIinR/](https://bnwolford.github.io/HealthAIinR/)
 
 ## License
-All materials hosted here are subject to the licenses described in the LICENSE file.
+All materials hosted here are subject to the licenses described in the [LICENSE file](LICENSE.md).
 
 ## Instructors
 
 Brooke Wolford, PhD
 
 ## Facilitators
-Vandana Vandana  
-Andrew Morris  
+Vandana Vandana, PhD 
+Andrew Morris, PhD
 
 ## Live Troubleshooting Session
 Wednesday, 10 December 14:00-15:00  
-Please read the [Onboarding instructions](onboarding.md) before the troubleshooting session if possible and absolutely before Friday.  
+Please read and complete [Onboarding instructions](onboarding.md) before the troubleshooting session if possible and absolutely before Friday.  
 
 ## Software Requirements
 R 3.6.0+
 RStudio 2025.09
-Packages: dplyr, tidyr, readr, ggplot2, knitr, rmarkdown
+Packages: dplyr, tidyr, readr, ggplot2, knitr, rmarkdown, workflows, tune, mlbench, ranger, randomForest
 
