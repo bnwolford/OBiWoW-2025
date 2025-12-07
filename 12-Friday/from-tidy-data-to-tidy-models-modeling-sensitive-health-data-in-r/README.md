@@ -36,7 +36,7 @@ Wednesday, 10 December 14:00-15:00
 Please read and complete [Onboarding instructions](onboarding.md) before the troubleshooting session if possible and absolutely before Friday.  
 
 ## Software Requirements
-R 3.6.0+
-RStudio 2025.09
-Packages: dplyr, tidyr, readr, ggplot2, knitr, rmarkdown, workflows, tune, mlbench, ranger, randomForest
+R 3.6.0+  
+RStudio 2025.09  
+Packages: dplyr, tidyr, readr, ggplot2, knitr, rmarkdown, workflows, tune, mlbench, ranger, randomForest  
 
