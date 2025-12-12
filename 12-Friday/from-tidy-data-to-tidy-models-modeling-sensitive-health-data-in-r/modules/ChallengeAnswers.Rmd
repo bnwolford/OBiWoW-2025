@@ -76,14 +76,14 @@ Task: Given a data frame of patients' inflammatory measures over time, create a 
 path3<-paste0(path,"/data/inflammation-01.csv")
 
 #read in the inflammation data as a tibble using the path3 variable. Note that the file does not include column names.
-df<-read_csv(path3,col_names=FALSE)
+idf<-read_csv(path3,col_names=FALSE)
 
 # use mutate to create a sample ID column
-df<-df %>% mutate(ID=row.names(df))
-df %>% select(ID)
+idf<-idf %>% mutate(ID=row.names(df))
+idf %>% select(ID)
 
 # use pivot_longer to restructure the data
-longdf<-df %>% pivot_longer(cols=X1:X40,
+longdf<-idf %>% pivot_longer(cols=X1:X40,
                      names_to="timepoint",
                      values_to="inflammation")
 
