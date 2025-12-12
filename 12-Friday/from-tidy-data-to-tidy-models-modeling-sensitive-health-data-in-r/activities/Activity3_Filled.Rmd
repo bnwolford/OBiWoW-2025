@@ -194,6 +194,10 @@ metrics <- metric_set(roc_auc, sens, spec, accuracy, kap)  # ROC AUC primary
 
 ### Fit the statistical models in the training data
 
+We don't have time to learn the theory behind logistic regression and random forest today, but you can read more about [logistic regression](https://www.geeksforgeeks.org/machine-learning/understanding-logistic-regression/) and [random forest](https://www.geeksforgeeks.org/machine-learning/random-forest-algorithm-in-machine-learning/).
+
+You can also check out another random forest tutorial [here](https://juliasilge.com/blog/sf-trees-random-tuning/)
+
 ```{r}
 # ---------- 7. Fit logistic regression on CV folds  ----------
 
@@ -213,8 +217,14 @@ glimpse(log_res)
 
 # ---------- 8. Tune random forest ----------
 
+#mtry is the number of variables to randomly sample at each split; rule of thumb is square root of number of predictors
+#because we only have 3 predictors, we can only try 1-3
+
+#min_n is the number of data points required in the node for the tree to split further
+#in theory this can be as large as the number of training samples
+
 rf_grid <- grid_random(
-  mtry(range = c(1L, 2L)),
+  mtry(range = c(1L, 3L)),
   min_n(range = c(2L, 20L)),
   size = 10
 )
@@ -227,24 +237,40 @@ rf_tune_res <- tune_grid(
   control = control_grid(save_pred = TRUE)
 )
 
+#let's visualize the random forest tuning
+rf_tune_res %>%
+  collect_metrics() %>%
+  filter(.metric == "roc_auc") %>%
+  select(mean, min_n, mtry) %>%
+  pivot_longer(min_n:mtry,
+    values_to = "value",
+    names_to = "parameter"
+  ) %>%
+  ggplot(aes(value, mean, color = parameter)) +
+  geom_point(show.legend = FALSE) +
+  facet_wrap(~parameter, scales = "free_x") +
+  labs(x = NULL, y = "AUC")
+
 #we use the show_best function for optimizing the tuning
-show_best(rf_tune_res, "roc_auc")
+show_best(rf_tune_res)
 
 # pick best by roc_auc
-best_rf <- select_best(rf_tune_res, "roc_auc")
+best_rf <- select_best(rf_tune_res, metric="roc_auc")
 
-# finalize the workflow
+# finalize the randomforest workflow
 final_rf_wf <- finalize_workflow(rf_wf, best_rf)
 ```
+
 
 ### Use optimized models on the test set
 
 ```{r}
 # ---------- 9. Last fit on the held-out test set ----------
 
+#random forest last fit
 rf_last_fit <- last_fit(final_rf_wf, data_split, metrics = metrics)
 
-# logistic last fit for direct comparison
+# logistic last fit 
 log_last_fit <- last_fit(log_wf, data_split, metrics = metrics)
 
 rf_res_test <- collect_metrics(rf_last_fit)
@@ -258,25 +284,31 @@ rf_preds <- collect_predictions(rf_last_fit)
 log_preds <- collect_predictions(log_last_fit)
 
 # ROC curves
-roc_rf <- roc_curve(rf_preds, truth = diabetes, .pred_yes)
-roc_log <- roc_curve(log_preds, truth = diabetes, .pred_yes)
+# note the .pred_1, this would be .pred_yes if we had yes/no as outcome
+roc_rf <- roc_curve(rf_preds, truth = diabetes, .pred_1)
+roc_log <- roc_curve(log_preds, truth = diabetes, .pred_1)
 
 p_roc <- ggplot() +
-  geom_line(data = roc_rf, aes(x = 1 - specificity, y = sensitivity), size = 1) +
-  geom_line(data = roc_log, aes(x = 1 - specificity, y = sensitivity), linetype = "dashed", size = 1) +
+  geom_line(data = roc_rf, aes(x = 1 - specificity, y = sensitivity), linewidth = 1) +
+  geom_line(data = roc_log, aes(x = 1 - specificity, y = sensitivity), linetype = "dashed", linewidth = 1) +
   labs(x = "False Positive Rate (1 - specificity)", y = "True Positive Rate (sensitivity)",
        title = "ROC curves: RF (solid) vs Logistic (dashed)") +
   coord_equal()
 p_roc
 
+```
+
+### Bonus: Calibration and Variable Importance
+
+```{r}
 # ---------- 11. Calibration (binned) ----------
 
 calib_rf <- rf_preds %>%
-  mutate(prob_bin = ntile(.pred_yes, 10)) %>%
+  mutate(prob_bin = ntile(.pred_1, 10)) %>%
   group_by(prob_bin) %>%
   summarise(
-    mean_pred = mean(.pred_yes),
-    obs = mean(as.numeric(diabetes == "yes")),
+    mean_pred = mean(.pred_1),
+    obs = mean(as.numeric(diabetes == 1)),
     n = n()
   )
 
@@ -287,19 +319,13 @@ p_calib <- ggplot(calib_rf, aes(x = mean_pred, y = obs)) +
 p_calib
 
 # ---------- 12. Variable importance (for final RF) ----------
+
 # extract final fitted parsnip model
 rf_fit <- rf_last_fit$.workflow[[1]] %>% extract_fit_parsnip()
 # vip works with parsnip model objects for ranger
 vip::vip(rf_fit$fit) + ggtitle("Variable importance (RF)")
 
-# ---------- 13. Confusion matrix and thresholding ----------
-rf_test_preds <- rf_preds %>%
-  mutate(pred_class = if_else(.pred_yes >= 0.5, "yes", "no") %>% factor(levels = c("no","yes")))
-
-conf_mat(data = rf_test_preds, truth = diabetes, estimate = pred_class) %>%
-  autoplot(type = "heatmap") + ggtitle("Confusion matrix (RF, threshold=0.5)")
-
-# ---------- 14. Summarize results (print) ----------
+# ---------- 13. Summarize results (print) ----------
 cat("Random forest test metrics:\n")
 print(rf_res_test)
 cat("Logistic regression test metrics:\n")
