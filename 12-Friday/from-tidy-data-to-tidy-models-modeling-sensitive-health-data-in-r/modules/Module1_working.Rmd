@@ -94,7 +94,6 @@ It is important that we name variables in a way that other users and our future 
 
 It's also important to use the `#` hash symbol to create comments for other users and our future selves.
 
-
 ### Packages and functions
 
 Packages are collections of R functions, data, and compiled code in a well-defined format, created to add specific functionality. You can do a lot with base R, but there are 10,000+ user contributed packages on CRAN. The directories in R where the packages are stored are called the libraries.
@@ -151,15 +150,18 @@ We are going to use example data from Software Carpentry. I have already downloa
 #if you are in the root directory, you can just load the data space created by Setup.R/CreateData.R
 load("workshop_data.RData")
 
-#let's look at the first few rows of the data frame called 'dat'
-
+#let's look at the first few rows of the dataframe called dat
+dat %>% glimpse()
 
 #we can accomplish the same thing with slightly different syntax
+glimpse(dat)
 
-#let's inspect the function
 
+#let's inspect the function, glimpse
+?glimpse
 
 #what class is the object dat?
+class(dat)
 
 
 ```

@@ -145,7 +145,6 @@ We are going to use example data from Software Carpentry. I have already downloa
 ##############################  READ IN .RDATA ########################################### 
 ###########################################################################################
 
-
 #if you are in the root directory, you can just load the data space created by Setup.R/CreateData.R
 load("workshop_data.RData")
 
