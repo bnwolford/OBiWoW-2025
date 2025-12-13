@@ -30,4 +30,4 @@ wei<-read_xpt("data/WHQ_L.xpt")
 tidy_nhanes<-read_csv("data/NHANES.csv")
 
 # Save specific data frames (e.g., df1 and df2) into one file
-save(dat,idf,pima,dia,pa,wei, file = "workshop_data.RData")
+save(dat,idf,pima,dia,pa,wei,tidy_nhanes, file = "workshop_data.RData")
