@@ -5,8 +5,20 @@ date: "2025-12-08"
 output: html_document
 ---
 
+#### Setup
+
+As in Module 1, we are going to set a global option within the document to define the root directory. 
+In the Files tab on the bottom right panel, navigate to the folder `from-tidy-data-to-tidy-models-modeling-sensitive-health-data-in-r`. Click on the arrow beside the blue wheel and select "Copy Folder Path To Clipboard" from the contextual menu. This is the path to your root directory, the github repository. 
+
+Paste the path below in line that says "PASTE PATH HERE". It should look something like `/your/path/OBiWoW-2025/12-Friday/from-tidy-data-to-tidy-models-modeling-sensitive-health-data-in-r/`. Be sure to keep the quotation marks. Now delete the hashtag from the front of the line so it will execute.
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+#define global root directory path
+#knitr::opts_knit$set(root.dir ="PASTE PATH HERE")
+
 ```
 
 # Activity 1
@@ -159,10 +171,13 @@ Ultimately, the responsible use of sensitive data is essential for building publ
 
 #how many samples do we have now?
 
+#you should have the working directory set from before
 #let's write out the sub2 data frame in a comma separated value file we can use later
-out_path<-paste0(getwd(),"/data/NHANES.csv")
-#use write_csv()
-#this file wrote into our working directory, within the data directory, and is named NHANES.csv
+
+write_csv(x=sub2,file="./data/NHANES.csv")
+
+#this has been written in the data directory within the root directory
+
 
 
 ```
