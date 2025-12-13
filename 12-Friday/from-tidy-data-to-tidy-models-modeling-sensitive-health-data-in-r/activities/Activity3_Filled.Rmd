@@ -5,9 +5,6 @@ date: "2025-12-08"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 ### License
 This work is licensed under a Creative Commons Attribution 4.0 International License (CC BY 4.0). To view a copy of this license, visit: https://creativecommons.org/licenses/by/4.0/
 
@@ -20,7 +17,21 @@ Objective: Use information from all modules to read in data and create statistic
 
 Please use pair programming approach as before. 
 
-### Set up environment
+#### Setup
+
+As before, in the Files tab on the bottom right panel, navigate to the folder `from-tidy-data-to-tidy-models-modeling-sensitive-health-data-in-r`. Click on the arrow beside the blue wheel and select "Copy Folder Path To Clipboard" from the contextual menu. 
+
+Paste the path below in line that says "PASTE PATH HERE". It should look something like `/your/path/OBiWoW-2025/12-Friday/from-tidy-data-to-tidy-models-modeling-sensitive-health-data-in-r/`. Be sure to keep the quotation marks. Now delete the hashtag from the front of the line so it will execute.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#define global root directory path
+#knitr::opts_knit$set(root.dir ="PASTE PATH HERE")
+
+```
+
+Now load the packages we need.
 
 ```{r}
 
@@ -38,6 +49,10 @@ library(ranger)     # random forest engine
 
 sessionInfo()
 
+#if you get an error with vip, try to re-install
+#note you need quotations when using install.packages() but not when using library()
+#install.packages("vip")
+
 ```
 
 ### Reading in the data
@@ -49,21 +64,20 @@ Remember the documentation for the files can be found here:
 [physical activity](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2021/DataFiles/PAQ_L.htm)
 [weight](https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2021/DataFiles/WHQ_L.htm)
 
-First, we need to set the working directory to the github repository. In the Files tab in the lower right panel, navigate to the "from-tidy-data-to-tidy-models-modeling-sensitive-health-data-in-r" directory. Select the arrow beside of "More" and "Copy Folder Path to Clipboard." Paste that below within quotes as an argument for the `setwd()` function as illustrated below.
 
 ```{r}
 
-#set working directory
-#setwd("OBiWoW-2025/12-Friday/from-tidy-data-to-tidy-models-modeling-sensitive-health-data-in-r/")
+#load the dataspace with the diabetes, weight, and physical activity data frames from NHANES
+load("workshop_data.RData")
 
 #diabetes
-dia<-read_xpt("data/DIQ_L.xpt")
+glimpse(dia)
 
 #physical activity
-pa<-read_xpt("data/PAQ_L.xpt")
+glimpse(pa)
 
 #weight
-wei<-read_xpt("data/WHQ_L.xpt")
+glimpse(wei)
 
 #diabetes data has more samples than physical activity and weight, so let's do a left join with physicial activity as the anchoring file
 df<-left_join(pa,dia) %>% left_join(wei)
@@ -159,7 +173,7 @@ cv_folds <- vfold_cv(train_data, v = 5, strata = diabetes)
 
 ```{r}
 # ---------- 4. Recipe: impute missing data + normalize variables  ----------
-# If phys_act is a factor in your data, change steps accordingly.
+
 rec <- recipe(diabetes ~ weight + vig_activity + mod_activity, data = train_data) %>%
   step_impute_median(all_numeric_predictors()) %>%
   step_normalize(all_numeric_predictors())
@@ -189,6 +203,7 @@ rf_wf <- workflow() %>%
 # ---------- 6. Metrics ----------
 metrics <- metric_set(roc_auc, sens, spec, accuracy, kap)  # ROC AUC primary
 
+#if you run into an error here, try calling yardstick::spec so that we specify we want the function from the yardstick package instead of another package we have loaded
 
 ```
 
@@ -300,6 +315,9 @@ p_roc
 
 ### Bonus: Calibration and Variable Importance
 
+You can read more about evaluating [calibration in tidymodels](https://www.tidymodels.org/learn/models/calibration/) and what to do if your [model is poorly calibrated](https://tidyverse.org/blog/2022/11/model-calibration/).
+
+
 ```{r}
 # ---------- 11. Calibration (binned) ----------
 
@@ -333,8 +351,6 @@ print(log_res_test)
 
 
 ```
-
-
 
 ### Interpretation
 
