@@ -5,16 +5,26 @@ date: "2025-12-08"
 output: html_document
 ---
 
+#### Setup
+
+As before, in the Files tab on the bottom right panel, navigate to the folder `from-tidy-data-to-tidy-models-modeling-sensitive-health-data-in-r`. Click on the arrow beside the blue wheel and select "Copy Folder Path To Clipboard" from the contextual menu. 
+
+Paste the path below in line that says "PASTE PATH HERE". It should look something like `/your/path/OBiWoW-2025/12-Friday/from-tidy-data-to-tidy-models-modeling-sensitive-health-data-in-r/`. Be sure to keep the quotation marks. Now delete the hashtag from the front of the line so it will execute.
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+#define global root directory path
+#knitr::opts_knit$set(root.dir ="PASTE PATH HERE")
+
 ```
 
 # Activity 2
 
 Objective: Use information from Module 2 to visualize data with ggplot2
 
-Please use the pair programming approach again.tor roles roughly every 10 minutes or whenever you come to a natural break point.
+Please use the pair programming approach again.
 
 ### Set up environment
 
@@ -34,21 +44,24 @@ sessionInfo()
 
 ### Reading in the data
 
-As in Activity 1, we are reading in data from the National Health and Nutrition Examination Survey from August 2021-August 2023. The complete set of data is available [here](https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Questionnaire&Cycle=2021-2023).
+As in Activity 1, we are using data from the National Health and Nutrition Examination Survey from August 2021-August 2023. The complete set of data is available [here](https://wwwn.cdc.gov/nchs/nhanes/search/datapage.aspx?Component=Questionnaire&Cycle=2021-2023).
 
-If you remember, we used the join function to join diabetes, weight, and physical activity data frames into one data frame. We tidied it up and wrote it out a file called NHANES.csv. Let's read that file in.
+If you remember, we used the `join()` function to join diabetes, weight, and physical activity data frames into one data frame. We tidied it up and wrote it out a file called `NHANES.csv`. Let's read that file in. 
 
-As before, we need to set the working directory to the github repository. In the Files tab in the lower right panel, navigate to the "from-tidy-data-to-tidy-models-modeling-sensitive-health-data-in-r" directory. Select the arrow beside of "More" and "Copy Folder Path to Clipboard." Paste that below within quotes as an argument for the `setwd()` function as illustrated below.
+If you didn't complete Activity 1, I've loaded the tidied dataframe into the `workshop_data.Rdata` dataspace for you. Remove the hashtags on the commands below to load the dataspace and define `df` as the appropriate data frame.
 
 ```{r}
 
-#set working directory
-#setwd("OBiWoW-2025/12-Friday/from-tidy-data-to-tidy-models-modeling-sensitive-health-data-in-r/")
+#NHANES dataset 
+df<-read_csv("./data/NHANES.csv")
 
-#diabetes
-df<-read_csv("data/NHANES.csv")
+#if you are in the root directory, you can just load the data space created by Setup.R/CreateData.R
+#load("workshop_data.RData")
+#df<-tidy_nhanes
+
 
 ```
+
 
 ### Plotting
 
@@ -89,15 +102,16 @@ df %>% filter(BMI>200) %>% count()
 
 ```
 
-
 If you recall, we created the BMI variable. It's likely that some of the height and weight measurements were incorrect, leading us to have outliers in BMI. A common rule of thumb for excluding outliers is removing variables that have a value outside the range of 1.5 times the interquartile range. Let's follow that rule.
+
+Summary statistic functions such as `quantile()` and `mean()` don't like when they are passed a vector with `NA` values. We will use the argument `na.rm=TRUE` to remove the missing values when quantifying the quantile and therefore avoid any errors.
 
 ```{r}
 
 #save a new data frame that has BMI outliers excluded
 df2<-df %>% mutate(
-  q1=quantile(BMI,0.25),
-  q3=quantile(BMI,0.75),
+  q1=quantile(BMI,0.25,na.rm=TRUE),
+  q3=quantile(BMI,0.75,na.rm-TRUE),
   iqr=q3-q1
 ) %>% filter(BMI>q1-1.5*iqr & BMI<q3+1.5*iqr) %>% select(-c(q1,q3,iqr))
 
